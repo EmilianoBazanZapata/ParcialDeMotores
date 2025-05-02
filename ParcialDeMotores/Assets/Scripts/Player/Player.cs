@@ -1,5 +1,6 @@
-﻿using UnityEngine;
-using UnityEngine.Serialization;
+﻿using System.Collections;
+using Bullet;
+using UnityEngine;
 
 namespace Player
 {
@@ -14,21 +15,29 @@ namespace Player
         [SerializeField] private float backwardMinAngle = 120f;
 
         [Header("Camara")] public Camera playerCamera;
-        public PlayerStateMachine StateMachine { get; private set; }
         
+        [Header("Disparo")]
+        public int maxAmmo = 10;
+        public float reloadTime = 2f;
+        public int currentAmmo;
+        public int totalAmmo = 100; 
         
-        [Header("Dirección - Amortiguación de cambio (°)")]
-        [SerializeField] private float directionHysteresis = 10f;
-        public MovementDirection LastDirection = MovementDirection.None;
-
+        [Header("Cooldown de disparo")]
+        public float shootCooldown = 0.3f;
+        private float _lastShootTime = -Mathf.Infinity;
+        
+        [SerializeField] private Transform shootPoint;
+        [SerializeField] private BulletPool bulletPool;
 
         #region States
+        public PlayerStateMachine StateMachine { get; private set; }
 
         public PlayerIdleState IdleState { get; private set; }
         public PlayerMoveState MoveState { get; private set; }
         public PlayerMoveBackwardsState MoveBackwardsState { get; private set; }
         public PlayerMoveLeftState MoveLeftState { get; private set; }
         public PlayerMoveRightState MoveRightState { get; private set; }
+        public PlayerReloadState ReloadState { get; private set; }
 
         #endregion
 
@@ -42,6 +51,7 @@ namespace Player
             MoveBackwardsState = new PlayerMoveBackwardsState(this, StateMachine, "MoveBackwards");
             MoveLeftState = new PlayerMoveLeftState(this, StateMachine, "MoveLeft");
             MoveRightState = new PlayerMoveRightState(this, StateMachine, "MoveRight");
+            ReloadState = new PlayerReloadState(this, StateMachine, "Reload");
         }
 
 
@@ -55,6 +65,11 @@ namespace Player
         {
             base.Update();
             StateMachine.CurrentState?.Update();
+            
+            RotateTowardsMouse();
+            
+            if (Input.GetMouseButton(0) && currentAmmo > 0 && CanShoot() && StateMachine.CurrentState != MoveBackwardsState)
+                ShootBullet();
         }
 
         public void Move(Vector3 input)
@@ -118,6 +133,56 @@ namespace Player
             }
         }
 
+        public IEnumerator ReloadCoroutine()
+        {
+            yield return new WaitForSeconds(reloadTime);
+
+            int bulletsNeeded = maxAmmo - currentAmmo;
+
+            if (totalAmmo <= 0)
+            {
+                Debug.Log("⚠ Sin munición en reserva.");
+                StateMachine.ChangeState(IdleState);
+                yield break;
+            }
+
+            int bulletsToReload = Mathf.Min(bulletsNeeded, totalAmmo);
+
+            currentAmmo += bulletsToReload;
+            totalAmmo -= bulletsToReload;
+
+            Debug.Log($"🔄 Recargado: +{bulletsToReload} balas | Munición restante: {totalAmmo}");
+
+            StateMachine.ChangeState(IdleState);
+        }
+
+        
+        public void ShootBullet()
+        {
+            _lastShootTime = Time.time;
+            
+            Ray ray = playerCamera.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                Vector3 hitPoint = hit.point;
+                hitPoint.y = shootPoint.position.y;
+                Vector3 direction = (hitPoint - shootPoint.position).normalized;
+
+                var bullet = bulletPool.GetBullet();
+                bullet.transform.position = shootPoint.position;
+                bullet.Initialize(direction, bulletPool.ReturnBullet);
+            }
+
+            currentAmmo--;
+
+            if (currentAmmo <= 0)
+                StateMachine.ChangeState(ReloadState);
+        }
+        
+        public bool CanShoot()
+        {
+            return Time.time >= _lastShootTime + shootCooldown && currentAmmo > 0;
+        }
 
         public void AnimationTrigger()
         {

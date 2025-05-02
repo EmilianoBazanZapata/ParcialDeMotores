@@ -1,4 +1,6 @@
-﻿namespace Player
+﻿using UnityEngine;
+
+namespace Player
 {
     public class PlayerMoveState : PlayerState
     {
@@ -13,7 +15,7 @@
         public override void Update()
         {
             base.Update();
-
+            
             var input = _player.GetInputDirection();
 
             SetIdleState(input);
