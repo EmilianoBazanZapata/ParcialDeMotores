@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Bullet;
+using UI;
 using UnityEngine;
 
 namespace Player
@@ -26,9 +27,11 @@ namespace Player
         [SerializeField] private Transform shootPoint;
         [SerializeField] private BulletPool bulletPool;
 
-        [Header("Vida")] public int maxHealth = 100;
+        [Header("Vida")] public int maxHealth = 75;
         public int currentHealth;
         private bool _live = true;
+        
+        [SerializeField] private UIHealthBar healthBarUI;
 
         #region States
 
@@ -65,6 +68,7 @@ namespace Player
             StateMachine.Initialize(IdleState);
 
             currentHealth = maxHealth;
+            healthBarUI.SetHealth((float)currentHealth / maxHealth);
         }
 
         protected override void Update()
@@ -201,6 +205,7 @@ namespace Player
             currentHealth = Mathf.Max(0, currentHealth);
 
             Debug.Log($"🩸 Daño recibido: -{amount} | Vida restante: {currentHealth}");
+            healthBarUI.SetHealth((float)currentHealth / maxHealth);
 
             if (currentHealth <= 0)
             {
@@ -223,6 +228,7 @@ namespace Player
             currentHealth += amount;
             currentHealth = Mathf.Min(currentHealth, maxHealth);
             Debug.Log($"❤️ Vida curada: +{amount} | Vida actual: {currentHealth}");
+            healthBarUI.SetHealth((float)currentHealth / maxHealth);
         }
 
         public bool CanShoot()
