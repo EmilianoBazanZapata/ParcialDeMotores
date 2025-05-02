@@ -12,6 +12,9 @@ namespace PickUps.PickupItem
         {
             if (other.TryGetComponent(out Player.Player player))
             {
+                if (type == PickupType.Health && player.currentHealth == player.maxHealth)
+                    return;
+                
                 switch (type)
                 {
                     case PickupType.Health:
@@ -23,7 +26,8 @@ namespace PickUps.PickupItem
                         break;
                 }
 
-                Destroy(gameObject);
+                var pool = FindObjectOfType<PickupPool>();
+                pool.ReturnPickup(gameObject);
             }
         }
     }
