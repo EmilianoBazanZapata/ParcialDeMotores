@@ -15,21 +15,23 @@ namespace Player
         [SerializeField] private float backwardMinAngle = 120f;
 
         [Header("Camara")] public Camera playerCamera;
-        
-        [Header("Disparo")]
-        public int maxAmmo = 10;
+
+        [Header("Disparo")] public int maxAmmo = 10;
         public float reloadTime = 2f;
         public int currentAmmo;
-        public int totalAmmo = 100; 
-        
-        [Header("Cooldown de disparo")]
-        public float shootCooldown = 0.3f;
+        public int totalAmmo = 100;
+
+        [Header("Cooldown de disparo")] public float shootCooldown = 0.3f;
         private float _lastShootTime = -Mathf.Infinity;
-        
         [SerializeField] private Transform shootPoint;
         [SerializeField] private BulletPool bulletPool;
 
+        [Header("Vida")] public int maxHealth = 100;
+        public int currentHealth;
+        private bool _live = true;
+
         #region States
+
         public PlayerStateMachine StateMachine { get; private set; }
 
         public PlayerIdleState IdleState { get; private set; }
@@ -38,6 +40,7 @@ namespace Player
         public PlayerMoveLeftState MoveLeftState { get; private set; }
         public PlayerMoveRightState MoveRightState { get; private set; }
         public PlayerReloadState ReloadState { get; private set; }
+        public PlayerDeadState DeadState { get; private set; }
 
         #endregion
 
@@ -52,6 +55,7 @@ namespace Player
             MoveLeftState = new PlayerMoveLeftState(this, StateMachine, "MoveLeft");
             MoveRightState = new PlayerMoveRightState(this, StateMachine, "MoveRight");
             ReloadState = new PlayerReloadState(this, StateMachine, "Reload");
+            DeadState = new PlayerDeadState(this, StateMachine, "Die");
         }
 
 
@@ -59,17 +63,29 @@ namespace Player
         {
             base.Start();
             StateMachine.Initialize(IdleState);
+
+            currentHealth = maxHealth;
         }
 
         protected override void Update()
         {
             base.Update();
             StateMachine.CurrentState?.Update();
-            
+
+            if (!_live)
+                return;
+
             RotateTowardsMouse();
-            
-            if (Input.GetMouseButton(0) && currentAmmo > 0 && CanShoot() && StateMachine.CurrentState != MoveBackwardsState)
+
+            if (Input.GetMouseButton(0) && currentAmmo > 0 && CanShoot() &&
+                StateMachine.CurrentState != MoveBackwardsState)
                 ShootBullet();
+
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                TakeDamage(25);
+                Debug.Log($"Vida actual: {currentHealth}");
+            }
         }
 
         public void Move(Vector3 input)
@@ -89,7 +105,7 @@ namespace Player
             var v = Input.GetAxisRaw("Vertical");
             return new Vector3(h, 0, v).normalized;
         }
-        
+
         public MovementDirection GetMovementDirectionFromInput(Vector3 input)
         {
             if (input == Vector3.zero)
@@ -112,7 +128,7 @@ namespace Player
 
             return MovementDirection.Backward;
         }
-        
+
         public void RotateTowardsMouse()
         {
             Ray ray = playerCamera.ScreenPointToRay(Input.mousePosition);
@@ -156,11 +172,11 @@ namespace Player
             StateMachine.ChangeState(IdleState);
         }
 
-        
+
         public void ShootBullet()
         {
             _lastShootTime = Time.time;
-            
+
             Ray ray = playerCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
@@ -178,7 +194,37 @@ namespace Player
             if (currentAmmo <= 0)
                 StateMachine.ChangeState(ReloadState);
         }
-        
+
+        public void TakeDamage(int amount)
+        {
+            currentHealth -= amount;
+            currentHealth = Mathf.Max(0, currentHealth);
+
+            Debug.Log($"🩸 Daño recibido: -{amount} | Vida restante: {currentHealth}");
+
+            if (currentHealth <= 0)
+            {
+                Die();
+            }
+        }
+
+        private void Die()
+        {
+            Debug.Log("💀 Jugador muerto");
+            _live = false;
+            StateMachine.ChangeState(DeadState);
+        }
+
+        public void Heal(int amount)
+        {
+            if (currentHealth >= maxHealth)
+                return;
+
+            currentHealth += amount;
+            currentHealth = Mathf.Min(currentHealth, maxHealth);
+            Debug.Log($"❤️ Vida curada: +{amount} | Vida actual: {currentHealth}");
+        }
+
         public bool CanShoot()
         {
             return Time.time >= _lastShootTime + shootCooldown && currentAmmo > 0;
