@@ -4,68 +4,95 @@ using UnityEngine.AI;
 
 namespace Enemy
 {
-    public class Enemy: MonoBehaviour
+    public class Enemy : MonoBehaviour
     {
+        [Header("Stats")]
         public int maxHealth = 50;
-        private int currentHealth;
-
+        public float damageInterval = 2.5f;
         public float stunDuration = 0.3f;
-        private bool isStunned = false;
-        [SerializeField]private NavMeshAgent agent;
-        [SerializeField] private float damageInterval = 2.5f;
-        private float lastDamageTime = -Mathf.Infinity;
+        public float attackRange = 2f;
+        public float detectionRadius = 10f;
+
+        [Header("Referencias")]
+        public Transform Player;
+        public NavMeshAgent Agent;
+        [SerializeField] private LayerMask playerLayer;
+
+        private int _currentHealth;
+        private float _lastDamageTime;
+        public bool IsStunned;
+
+        public Animator Animator { get; private set; }
+
+        #region States  
+        public EnemyStateMachine StateMachine { get; private set; }
+        public EnemyIdleState IdleState { get; private set; }
+        public ChaseState ChaseState { get; private set; }
+        public EnemyAttackState AttackState { get; private set; }
+        public EnemyDeadState DeadState { get; private set; }
+        #endregion
         
+
+        private void Awake()
+        {
+            Animator = GetComponent<Animator>();
+            Agent = GetComponent<NavMeshAgent>();
+            Player = GameObject.FindGameObjectWithTag("Player")?.transform;
+            StateMachine = new EnemyStateMachine();
+            IdleState = new EnemyIdleState(this, StateMachine, "Idle");
+            ChaseState = new ChaseState(this, StateMachine, "Chase");
+            DeadState= new EnemyDeadState(this, StateMachine, "Die");
+        }
+
         private void Start()
         {
-            currentHealth = maxHealth;
+            _currentHealth = maxHealth;
+            StateMachine.Initialize(IdleState);
+        }
+
+        private void Update()
+        {
+            StateMachine.CurrentState?.Update();
         }
 
         public void TakeDamage(int damage)
         {
-            if (isStunned) return;
-
-            currentHealth -= damage;
-            Debug.Log($"Enemigo recibe {damage} de daño. Vida restante: {currentHealth}");
-
-            if (currentHealth <= 0)
+            _currentHealth -= damage;
+            
+            if (_currentHealth <= 0)
             {
-                Die();
+                StateMachine.ChangeState(DeadState);
                 return;
             }
 
             StartCoroutine(StunCoroutine());
         }
-        
+
         private IEnumerator StunCoroutine()
         {
-            isStunned = true;
-            agent.isStopped = true;
+            IsStunned = true;
+            Agent.isStopped = true;
             yield return new WaitForSeconds(stunDuration);
-            agent.isStopped = false;
-            isStunned = false;
-        }
-
-        private void Die()
-        {
-            Debug.Log("[Enemy] ¡Muerto!");
-            Destroy(gameObject); // o return al pool si usás pooling
+            Agent.isStopped = false;
+            IsStunned = false;
         }
         
-        private void OnTriggerStay(Collider other)
+        public bool IsPlayerInAttackRange()
         {
-            if (other.CompareTag("Player"))
-            {
-                if (Time.time >= lastDamageTime + damageInterval)
-                {
-                    var player = other.GetComponent<Player.Player>();
-                    if (player != null)
-                    {
-                        player.TakeDamage(25);
-                        lastDamageTime = Time.time;
-                        Debug.Log("El jugador fue dañado por contacto con el enemigo");
-                    }
-                }
-            }
+            return Player != null && Vector3.Distance(transform.position, Player.position) <= attackRange;
+        }
+
+        public bool IsPlayerDetected()
+        {
+            if (Player == null) return false;
+            var distance = Vector3.Distance(transform.position, Player.position);
+            return distance <= detectionRadius && Physics.CheckSphere(transform.position, detectionRadius, playerLayer);
+        }
+
+        public void MoveToPlayer()
+        {
+            if (Player != null && Agent.enabled)
+                Agent.SetDestination(Player.position);
         }
     }
 }

@@ -1,0 +1,33 @@
+﻿namespace Enemy
+{
+    public class EnemyIdleState : EnemyState
+    {
+        private readonly Enemy _enemy;
+
+        public EnemyIdleState(Enemy enemy, EnemyStateMachine stateMachine, string animBoolName)
+            : base(enemy, stateMachine, animBoolName)
+        {
+            _enemy = enemy;
+        }
+
+        public override void Enter()
+        {
+            base.Enter();
+            _enemy.Agent.isStopped = true;
+        }
+
+        public override void Update()
+        {
+            base.Update();
+
+            if (_enemy.IsPlayerDetected())
+                StateMachine.ChangeState(_enemy.ChaseState);
+        }
+
+        public override void Exit()
+        {
+            base.Exit();
+            _enemy.Agent.isStopped = false;
+        }
+    }
+}
