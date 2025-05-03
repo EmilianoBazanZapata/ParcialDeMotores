@@ -84,12 +84,6 @@ namespace Player
             if (Input.GetMouseButton(0) && currentAmmo > 0 && CanShoot() &&
                 StateMachine.CurrentState != MoveBackwardsState)
                 ShootBullet();
-
-            if (Input.GetKeyDown(KeyCode.P))
-            {
-                TakeDamage(25);
-                Debug.Log($"Vida actual: {currentHealth}");
-            }
         }
 
         public void Move(Vector3 input)

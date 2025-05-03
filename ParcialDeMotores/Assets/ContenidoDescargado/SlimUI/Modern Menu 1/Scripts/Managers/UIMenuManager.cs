@@ -84,7 +84,7 @@ namespace SlimUI.ModernMenu{
 			CameraObject = transform.GetComponent<Animator>();
 
 			playMenu.SetActive(false);
-			exitMenu.SetActive(false);
+			if(exitMenu != null) exitMenu.SetActive(false);
 			if(extrasMenu) extrasMenu.SetActive(false);
 			firstMenu.SetActive(true);
 			mainMenu.SetActive(true);
@@ -118,13 +118,13 @@ namespace SlimUI.ModernMenu{
 		}
 
 		public void PlayCampaign(){
-			exitMenu.SetActive(false);
+			if(exitMenu != null) exitMenu.SetActive(false);
 			if(extrasMenu) extrasMenu.SetActive(false);
 			playMenu.SetActive(true);
 		}
 		
 		public void PlayCampaignMobile(){
-			exitMenu.SetActive(false);
+			if(exitMenu != null) exitMenu.SetActive(false);
 			if(extrasMenu) extrasMenu.SetActive(false);
 			playMenu.SetActive(true);
 			mainMenu.SetActive(false);
@@ -158,21 +158,21 @@ namespace SlimUI.ModernMenu{
 
 		void DisablePanels(){
 			PanelControls.SetActive(false);
-			PanelVideo.SetActive(false);
+			//PanelVideo.SetActive(false);
 			PanelGame.SetActive(false);
-			PanelKeyBindings.SetActive(false);
+			//PanelKeyBindings.SetActive(false);
 
 			lineGame.SetActive(false);
 			lineControls.SetActive(false);
 			lineVideo.SetActive(false);
 			lineKeyBindings.SetActive(false);
 
-			PanelMovement.SetActive(false);
-			lineMovement.SetActive(false);
-			PanelCombat.SetActive(false);
-			lineCombat.SetActive(false);
-			PanelGeneral.SetActive(false);
-			lineGeneral.SetActive(false);
+			//PanelMovement.SetActive(false);
+			//lineMovement.SetActive(false);
+			//PanelCombat.SetActive(false);
+			//lineCombat.SetActive(false);
+			// PanelGeneral.SetActive(false);
+			// lineGeneral.SetActive(false);
 		}
 
 		public void GamePanel(){
