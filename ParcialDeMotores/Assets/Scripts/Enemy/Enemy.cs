@@ -12,6 +12,7 @@ namespace Enemy
         public float stunDuration = 0.3f;
         public float attackRange = 2f;
         public float detectionRadius = 10f;
+        public int damage;
 
         [Header("Referencias")] public Transform Player;
         public NavMeshAgent Agent;

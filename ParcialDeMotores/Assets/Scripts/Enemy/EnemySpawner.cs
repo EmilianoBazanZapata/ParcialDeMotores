@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Enemy
@@ -8,10 +9,10 @@ namespace Enemy
         [SerializeField] private Transform[] spawnPoints;
         [SerializeField] private float spawnInterval = 5f;
         [SerializeField] private EnemyPool enemyPool;
+        [SerializeField] private List<EnemySpawnConfig> enemyTypes;
 
         private void Start()
         {
-            Debug.Log("[EnemySpawner] Start ejecutado.");
             StartCoroutine(SpawnLoop());
         }
 
@@ -19,17 +20,39 @@ namespace Enemy
         {
             while (true)
             {
-                Debug.Log("[EnemySpawner] Dentro del SpawnRoutine");
                 yield return new WaitForSeconds(spawnInterval);
 
                 Transform randomPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-                var enemy = enemyPool.GetEnemy(randomPoint.position);
-
-                if (enemy == null)
+                GameObject selectedPrefab = GetRandomEnemyPrefab();
+                
+                if (selectedPrefab != null)
                 {
-                    Debug.LogWarning("[Spawner] No se pudo spawnear enemigo (pool vacío).");
+                    var enemy = enemyPool.GetEnemy(selectedPrefab, randomPoint.position);
+                    if (enemy == null)
+                    {
+                        Debug.LogWarning("[Spawner] No se pudo spawnear enemigo.");
+                    }
                 }
             }
+        }
+
+        private GameObject GetRandomEnemyPrefab()
+        {
+            float totalWeight = 0f;
+            foreach (var config in enemyTypes)
+                totalWeight += config.spawnProbability;
+
+            float randomValue = Random.Range(0, totalWeight);
+            float current = 0f;
+
+            foreach (var config in enemyTypes)
+            {
+                current += config.spawnProbability;
+                if (randomValue <= current)
+                    return config.prefab;
+            }
+
+            return enemyTypes.Count > 0 ? enemyTypes[0].prefab : null;
         }
     }
 }

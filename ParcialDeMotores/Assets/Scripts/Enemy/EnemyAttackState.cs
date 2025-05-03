@@ -40,7 +40,7 @@ namespace Enemy
             _enemy.Animator.SetTrigger("Attack");
             
             if (!_enemy.Player.TryGetComponent<Player.Player>(out var player)) return;
-            player.TakeDamage(25);
+            player.TakeDamage(_enemy.damage);
         }
     }
 }

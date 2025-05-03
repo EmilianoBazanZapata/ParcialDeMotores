@@ -67,6 +67,12 @@ namespace Managers
         {
             SceneManager.LoadScene("MainMenu");
         }
+        
+        public void ReloadScene()
+        {
+            Time.timeScale = 1f; // Por si estaba en pausa
+            SceneManager.LoadScene("Loading");
+        }
 
         private void TogglePause()
         {
