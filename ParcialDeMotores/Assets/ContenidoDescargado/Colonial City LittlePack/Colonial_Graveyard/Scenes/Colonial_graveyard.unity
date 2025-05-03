@@ -13402,7 +13402,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnPoints:
   - {fileID: 915082992}
-  spawnInterval: 5
+  spawnInterval: 2
   enemyPool: {fileID: 421438616}
 --- !u!1001 &1532858537
 PrefabInstance:
