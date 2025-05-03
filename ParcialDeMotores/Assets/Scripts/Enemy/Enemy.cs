@@ -1,37 +1,43 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Serialization;
 
 namespace Enemy
 {
     public class Enemy : MonoBehaviour
     {
-        [Header("Stats")]
-        public int maxHealth = 50;
+        [Header("Stats")] public int maxHealth = 50;
         public float damageInterval = 2.5f;
         public float stunDuration = 0.3f;
         public float attackRange = 2f;
         public float detectionRadius = 10f;
 
-        [Header("Referencias")]
-        public Transform Player;
+        [Header("Referencias")] public Transform Player;
         public NavMeshAgent Agent;
         [SerializeField] private LayerMask playerLayer;
 
         private int _currentHealth;
         private float _lastDamageTime;
         public bool IsStunned;
+        public EnemyPool Pool;
 
         public Animator Animator { get; private set; }
 
-        #region States  
+        #region States
+
         public EnemyStateMachine StateMachine { get; private set; }
         public EnemyIdleState IdleState { get; private set; }
         public ChaseState ChaseState { get; private set; }
         public EnemyAttackState AttackState { get; private set; }
         public EnemyDeadState DeadState { get; private set; }
+
         #endregion
-        
+
+        public void Initialize(EnemyPool enemyPool)
+        {
+            Pool = enemyPool;
+        }
 
         private void Awake()
         {
@@ -41,7 +47,8 @@ namespace Enemy
             StateMachine = new EnemyStateMachine();
             IdleState = new EnemyIdleState(this, StateMachine, "Idle");
             ChaseState = new ChaseState(this, StateMachine, "Chase");
-            DeadState= new EnemyDeadState(this, StateMachine, "Die");
+            DeadState = new EnemyDeadState(this, StateMachine, "Die");
+            AttackState = new EnemyAttackState(this, StateMachine, "Attack");
         }
 
         private void Start()
@@ -58,7 +65,7 @@ namespace Enemy
         public void TakeDamage(int damage)
         {
             _currentHealth -= damage;
-            
+
             if (_currentHealth <= 0)
             {
                 StateMachine.ChangeState(DeadState);
@@ -76,7 +83,7 @@ namespace Enemy
             Agent.isStopped = false;
             IsStunned = false;
         }
-        
+
         public bool IsPlayerInAttackRange()
         {
             return Player != null && Vector3.Distance(transform.position, Player.position) <= attackRange;
@@ -93,6 +100,15 @@ namespace Enemy
         {
             if (Player != null && Agent.enabled)
                 Agent.SetDestination(Player.position);
+        }
+
+        public void ResetEnemy()
+        {
+            _currentHealth = maxHealth;
+            IsStunned = false;
+            Agent.isStopped = false;
+            Animator.Rebind();
+            StateMachine.ChangeState(IdleState);
         }
     }
 }

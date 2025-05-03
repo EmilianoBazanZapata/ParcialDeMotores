@@ -24,7 +24,7 @@ namespace Enemy
         private System.Collections.IEnumerator WaitAndDestroy()
         {
             yield return new WaitForSeconds(1.3f); // Tiempo de animación
-            Object.Destroy(_enemy.gameObject);
+            _enemy.Pool.ReturnEnemy(_enemy);
         }
     }
 }
