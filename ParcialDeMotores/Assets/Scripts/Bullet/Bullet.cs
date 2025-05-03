@@ -10,6 +10,7 @@ namespace Bullet
         private Vector3 _direction;
         private float _timer;
         private System.Action<Bullet> _onReturnToPool;
+        public int damage = 10;
 
         public void Initialize(Vector3 direction, System.Action<Bullet> returnToPool)
         {
@@ -32,8 +33,11 @@ namespace Bullet
         {
             if (other.CompareTag("Enemy"))
             {
-                Debug.Log("Enemy hit: " + other.name);
-                // Podés aplicar daño aquí
+                var enemy = other.GetComponent<Enemy.Enemy>();
+                if (enemy != null)
+                {
+                    enemy.TakeDamage(damage);
+                }
             }
 
             ReturnToPool();
