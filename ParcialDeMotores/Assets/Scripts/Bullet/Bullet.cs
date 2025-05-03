@@ -33,8 +33,6 @@ namespace Bullet
         {
             if (other.CompareTag("Enemy"))
             {
-                Debug.Log($"[Bullet] Impactó a: {other.name}");
-                
                 var enemy = other.GetComponent<Enemy.Enemy>();
                 if (enemy != null)
                 {

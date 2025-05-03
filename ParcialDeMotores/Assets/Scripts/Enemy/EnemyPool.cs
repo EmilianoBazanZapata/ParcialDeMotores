@@ -1,58 +1,37 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Enemy
 {
     public class EnemyPool : MonoBehaviour
     {
-        [SerializeField] private int maxPoolSize = 20;
-        [SerializeField] private GameObject defaultEnemyPrefab;
-
-        private readonly List<Enemy> pool = new();
-        private int currentCount = 0;
-
-        private void Start()
-        {
-            // Pre-instancia enemigos si querés que el pool arranque con objetos disponibles
-            for (int i = 0; i < maxPoolSize; i++)
-            {
-                GameObject obj = Instantiate(defaultEnemyPrefab, transform);
-                obj.SetActive(false);
-
-                Enemy enemy = obj.GetComponent<Enemy>();
-                enemy.Initialize(this);
-                pool.Add(enemy);
-                currentCount++;
-            }
-        }
+        [SerializeField] private int _maxPoolSize = 20;
+        private readonly List<Enemy> _pool = new();
+        private int _currentCount = 0;
 
         public Enemy GetEnemy(GameObject prefab, Vector3 spawnPosition)
         {
-            foreach (var enemy in pool)
+            foreach (var enemy in _pool)
             {
-                if (!enemy.gameObject.activeInHierarchy)
-                {
-                    enemy.transform.position = spawnPosition;
-                    enemy.gameObject.SetActive(true);
-                    enemy.ResetEnemy();
-                    return enemy;
-                }
+                if (enemy.gameObject.activeInHierarchy) continue;
+                enemy.transform.position = spawnPosition;
+                enemy.gameObject.SetActive(true);
+                enemy.ResetEnemy();
+                return enemy;
             }
 
-            if (currentCount >= maxPoolSize)
-            {
-                Debug.LogWarning("[EnemyPool] Límite máximo alcanzado, no se crearán más enemigos.");
+            if (_currentCount >= _maxPoolSize)
                 return null;
-            }
-
-            GameObject newObj = Instantiate(prefab, spawnPosition, Quaternion.identity);
+            
+            var newObj = Instantiate(prefab, spawnPosition, Quaternion.identity);
             newObj.transform.SetParent(transform); // mantiene jerarquía limpia
 
-            Enemy newEnemy = newObj.GetComponent<Enemy>();
+            var newEnemy = newObj.GetComponent<Enemy>();
             newEnemy.Initialize(this);
             newEnemy.ResetEnemy();
-            pool.Add(newEnemy);
-            currentCount++;
+            _pool.Add(newEnemy);
+            _currentCount++;
 
             return newEnemy;
         }

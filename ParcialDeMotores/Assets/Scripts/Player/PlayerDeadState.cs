@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Player
+﻿namespace Player
 {
     public class PlayerDeadState: PlayerState
     {
@@ -11,21 +9,9 @@ namespace Player
         {
             _player = player;
         }
-
-        public override void Enter()
-        {
-            base.Enter();
-            Debug.Log("💀 Entrando en estado de muerte");
-        }
-
         public override void Update()
         {
             // Nada. Está muerto.
-        }
-
-        public override void Exit()
-        {
-            base.Exit(); // por si querés reiniciar luego
         }
     }
 }

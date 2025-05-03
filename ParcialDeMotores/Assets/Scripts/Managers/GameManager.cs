@@ -65,11 +65,15 @@ namespace Managers
 
         public void ReturnToMenu()
         {
+            if (CurrentState == GameState.InGame) return;
+            
             SceneManager.LoadScene("MainMenu");
         }
         
         public void ReloadScene()
         {
+            if (CurrentState == GameState.InGame) return;
+            
             Time.timeScale = 1f; // Por si estaba en pausa
             SceneManager.LoadScene("Loading");
         }
@@ -100,6 +104,8 @@ namespace Managers
 
         public void QuitGame()
         {
+            if (CurrentState == GameState.InGame) return;
+            
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #else

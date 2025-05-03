@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Enums;
+using UnityEngine;
 using TMPro;
 
 namespace Managers
@@ -8,38 +9,35 @@ namespace Managers
         [SerializeField] private float survivalTime = 120f; // tiempo en segundos
         [SerializeField] private TextMeshProUGUI timerText;
     
-        private float currentTime;
-        private bool gameEnded = false;
+        private float _currentTime;
+        private bool _gameEnded = false;
 
         private void Start()
         {
-            currentTime = survivalTime;
+            _currentTime = survivalTime;
         }
 
         private void Update()
         {
-            if (gameEnded) return;
+            if (_gameEnded) return;
+            
+            if (GameManager.Instance.CurrentState != GameState.InGame) return;
 
-            currentTime -= Time.deltaTime;
+            _currentTime -= Time.deltaTime;
             UpdateTimerUI();
 
-            if (!(currentTime <= 0f)) return;
+            if (!(_currentTime <= 0f)) return;
             
-            currentTime = 0f;
-            gameEnded = true;
-            HandleVictory();
+            _currentTime = 0f;
+            _gameEnded = true;
+            GameManager.Instance.SetGameState(GameState.Victory);
         }
 
         private void UpdateTimerUI()
         {
-            var minutes = Mathf.FloorToInt(currentTime / 60f);
-            var seconds = Mathf.FloorToInt(currentTime % 60f);
+            var minutes = Mathf.FloorToInt(_currentTime / 60f);
+            var seconds = Mathf.FloorToInt(_currentTime % 60f);
             timerText.text = $"Time Left: {minutes:00}:{seconds:00}";
-        }
-
-        private void HandleVictory()
-        {
-            Debug.Log("[Timer] ¡Tiempo cumplido! El jugador sobrevivió.");
         }
     }
 }

@@ -1,15 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Enums;
+using Managers;
 using UnityEngine;
 
 namespace Enemy
 {
     public class EnemySpawner : MonoBehaviour
     {
-        [SerializeField] private Transform[] spawnPoints;
-        [SerializeField] private float spawnInterval = 5f;
-        [SerializeField] private EnemyPool enemyPool;
-        [SerializeField] private List<EnemySpawnConfig> enemyTypes;
+        [SerializeField] private Transform[] _spawnPoints;
+        [SerializeField] private float _spawnInterval = 5f;
+        [SerializeField] private EnemyPool _enemyPool;
+        [SerializeField] private List<EnemySpawnConfig> _enemyTypes;
 
         private void Start()
         {
@@ -20,39 +22,39 @@ namespace Enemy
         {
             while (true)
             {
-                yield return new WaitForSeconds(spawnInterval);
-
-                Transform randomPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-                GameObject selectedPrefab = GetRandomEnemyPrefab();
+                yield return new WaitForSeconds(_spawnInterval);
                 
-                if (selectedPrefab != null)
+                if (GameManager.Instance.CurrentState != GameState.InGame) continue;
+
+                var randomPoint = _spawnPoints[Random.Range(0, _spawnPoints.Length)];
+                var selectedPrefab = GetRandomEnemyPrefab();
+
+                if (selectedPrefab == null) continue;
+                var enemy = _enemyPool.GetEnemy(selectedPrefab, randomPoint.position);
+                if (enemy == null)
                 {
-                    var enemy = enemyPool.GetEnemy(selectedPrefab, randomPoint.position);
-                    if (enemy == null)
-                    {
-                        Debug.LogWarning("[Spawner] No se pudo spawnear enemigo.");
-                    }
+                    Debug.LogWarning("[Spawner] No se pudo spawnear enemigo.");
                 }
             }
         }
 
         private GameObject GetRandomEnemyPrefab()
         {
-            float totalWeight = 0f;
-            foreach (var config in enemyTypes)
+            var totalWeight = 0f;
+            foreach (var config in _enemyTypes)
                 totalWeight += config.spawnProbability;
 
-            float randomValue = Random.Range(0, totalWeight);
-            float current = 0f;
+            var randomValue = Random.Range(0, totalWeight);
+            var current = 0f;
 
-            foreach (var config in enemyTypes)
+            foreach (var config in _enemyTypes)
             {
                 current += config.spawnProbability;
                 if (randomValue <= current)
                     return config.prefab;
             }
 
-            return enemyTypes.Count > 0 ? enemyTypes[0].prefab : null;
+            return _enemyTypes.Count > 0 ? _enemyTypes[0].prefab : null;
         }
     }
 }

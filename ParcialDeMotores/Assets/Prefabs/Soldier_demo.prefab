@@ -612,6 +612,6 @@ MonoBehaviour:
   shootCooldown: 0.3
   shootPoint: {fileID: 6828074560294647262}
   bulletPool: {fileID: 9625462308687292, guid: 588c10a7c86fc3d4f8993481847f65d5, type: 3}
-  maxHealth: 800000
+  maxHealth: 75
   currentHealth: 0
   healthBarUI: {fileID: 0}
