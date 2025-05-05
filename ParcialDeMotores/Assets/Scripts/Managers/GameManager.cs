@@ -1,15 +1,18 @@
 ﻿using System;
 using Enums;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace Managers
 {
     public class GameManager : MonoBehaviour
     {
-        [Header("Referencias")]
-        [SerializeField] private Camera gameCamera;
-        [SerializeField] private Camera menuCamera; 
+        [Header("Referencias")] [SerializeField]
+        private Camera gameCamera;
+
+        [SerializeField] private Camera menuCamera;
 
         private bool isPaused;
 
@@ -48,7 +51,7 @@ namespace Managers
                 TogglePause();
             }
         }
-        
+
         public void ResumeFromMenu()
         {
             isPaused = false;
@@ -59,21 +62,21 @@ namespace Managers
 
             if (menuCamera != null)
                 menuCamera.enabled = false;
-            
+
             SetGameState(GameState.InGame);
         }
 
         public void ReturnToMenu()
         {
             if (CurrentState == GameState.InGame) return;
-            
+
             SceneManager.LoadScene("MainMenu");
         }
-        
+
         public void ReloadScene()
         {
             if (CurrentState == GameState.InGame) return;
-            
+
             Time.timeScale = 1f; // Por si estaba en pausa
             SceneManager.LoadScene("Loading");
         }
@@ -89,7 +92,7 @@ namespace Managers
 
             if (menuCamera != null)
                 menuCamera.enabled = isPaused;
-            
+
             SetGameState(isPaused ? GameState.Menu : GameState.InGame);
         }
 
@@ -100,12 +103,10 @@ namespace Managers
             OnGameStateChanged?.Invoke(CurrentState);
         }
 
-        #region Estados Públicos
-
         public void QuitGame()
         {
             if (CurrentState == GameState.InGame) return;
-            
+
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #else
@@ -113,9 +114,9 @@ namespace Managers
 #endif
         }
 
+        #region Estados Públicos
+
         public void StartGame() => SetGameState(GameState.StartGame);
-        public void WinGame() => SetGameState(GameState.Victory);
-        public void LoseGame() => SetGameState(GameState.GameOver);
         public void GoToMenu() => SetGameState(GameState.MainMenu);
         public void GoToControl() => SetGameState(GameState.InControls);
         public void GoToOptions() => SetGameState(GameState.InOptions);
@@ -124,6 +125,19 @@ namespace Managers
         public void ResumeGame() => SetGameState(GameState.InGame);
         public void InGame() => SetGameState(GameState.InGame);
         public void InMenu() => SetGameState(GameState.Menu);
+
+        public void WinGame()
+        {
+            SetGameState(GameState.Victory);
+            TogglePause();
+        }
+
+
+        public void LoseGame()
+        {
+            SetGameState(GameState.GameOver);
+            TogglePause();
+        }
 
         #endregion
     }

@@ -12,6 +12,9 @@
 
         public override void Enter()
         {
+            if (_player.totalAmmo == 0)
+                return;
+            
             base.Enter();
             
             _player.StartCoroutine(_player.ReloadCoroutine());

@@ -1,4 +1,6 @@
-﻿namespace Player
+﻿using Managers;
+
+namespace Player
 {
     public class PlayerDeadState: PlayerState
     {
@@ -11,7 +13,7 @@
         }
         public override void Update()
         {
-            // Nada. Está muerto.
+            GameManager.Instance.LoseGame();
         }
     }
 }

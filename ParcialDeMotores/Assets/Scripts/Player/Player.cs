@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Bullet;
 using Enums;
 using Managers;
@@ -19,6 +20,7 @@ namespace Player
         public float reloadTime = 2f;
         public int currentAmmo;
         public int totalAmmo = 100;
+        public event Action<int, int> OnAmmoChanged;
 
         [Header("Cooldown de disparo")] public float shootCooldown = 0.3f;
         private float _lastShootTime = -Mathf.Infinity;
@@ -85,6 +87,9 @@ namespace Player
             if (Input.GetMouseButton(0) && currentAmmo > 0 && CanShoot() &&
                 StateMachine.CurrentState != MoveBackwardsState)
                 ShootBullet();
+            
+            if(Input.GetKeyDown(KeyCode.R) && totalAmmo >0 && currentAmmo < maxAmmo)
+                StateMachine.ChangeState(ReloadState);
         }
 
         public void Move(Vector3 input)
@@ -122,6 +127,7 @@ namespace Player
 
         public IEnumerator ReloadCoroutine()
         {
+            SoundManager.Instance.PlaySound(SoundType.Reload);
             yield return new WaitForSeconds(reloadTime);
 
             var bulletsNeeded = maxAmmo - currentAmmo;
@@ -136,6 +142,8 @@ namespace Player
 
             currentAmmo += bulletsToReload;
             totalAmmo -= bulletsToReload;
+            
+            NotifyAmmoChange();
 
             StateMachine.ChangeState(IdleState);
         }
@@ -143,6 +151,8 @@ namespace Player
 
         public void ShootBullet()
         {
+            SoundManager.Instance.PlaySound(SoundType.Shot);
+            
             _lastShootTime = Time.time;
 
             var ray = playerCamera.ScreenPointToRay(Input.mousePosition);
@@ -158,6 +168,7 @@ namespace Player
             }
 
             currentAmmo--;
+            NotifyAmmoChange();
 
             if (currentAmmo <= 0)
                 StateMachine.ChangeState(ReloadState);
@@ -165,6 +176,9 @@ namespace Player
 
         public void TakeDamage(int amount)
         {
+            if(!_live)
+                return;
+            
             currentHealth -= amount;
             currentHealth = Mathf.Max(0, currentHealth);
             healthBarUI.SetHealth((float)currentHealth / maxHealth);
@@ -176,6 +190,7 @@ namespace Player
         private void Die()
         {
             _live = false;
+            SoundManager.Instance.PlaySound(SoundType.PlayerDeath);
             StateMachine.ChangeState(DeadState);
         }
 
@@ -187,6 +202,11 @@ namespace Player
             currentHealth += amount;
             currentHealth = Mathf.Min(currentHealth, maxHealth);
             healthBarUI.SetHealth((float)currentHealth / maxHealth);
+        }
+        
+        private void NotifyAmmoChange()
+        {
+            OnAmmoChanged?.Invoke(currentAmmo, totalAmmo);
         }
 
         public bool CanShoot()

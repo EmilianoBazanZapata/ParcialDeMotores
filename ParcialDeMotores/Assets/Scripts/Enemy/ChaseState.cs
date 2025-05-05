@@ -1,4 +1,7 @@
-﻿namespace Enemy
+﻿using Enums;
+using Managers;
+
+namespace Enemy
 {
     public class ChaseState : EnemyState
     {

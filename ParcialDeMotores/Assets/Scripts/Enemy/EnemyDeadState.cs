@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using Enums;
+using Managers;
+using UnityEngine;
 
 namespace Enemy
 {
@@ -15,6 +17,8 @@ namespace Enemy
         public override void Enter()
         {
             base.Enter();
+            
+            SoundManager.Instance.PlaySound(SoundType.ZombieDeath);
 
             _enemy.Agent.isStopped = true;
             _enemy.Animator.SetTrigger("Die");

@@ -30,7 +30,7 @@ namespace Managers
             
             _currentTime = 0f;
             _gameEnded = true;
-            GameManager.Instance.SetGameState(GameState.Victory);
+            GameManager.Instance.WinGame();
         }
 
         private void UpdateTimerUI()

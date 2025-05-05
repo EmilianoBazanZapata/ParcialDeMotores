@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using Enums;
+using Managers;
+using UnityEngine;
 
 namespace Enemy
 {
@@ -41,6 +43,7 @@ namespace Enemy
             
             if (!_enemy.Player.TryGetComponent<Player.Player>(out var player)) return;
             player.TakeDamage(_enemy.damage);
+            SoundManager.Instance.PlaySound(SoundType.ZombieAttack);
         }
     }
 }
