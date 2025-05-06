@@ -204,7 +204,7 @@ namespace Player
             healthBarUI.SetHealth((float)currentHealth / maxHealth);
         }
         
-        private void NotifyAmmoChange()
+        public void NotifyAmmoChange()
         {
             OnAmmoChanged?.Invoke(currentAmmo, totalAmmo);
         }

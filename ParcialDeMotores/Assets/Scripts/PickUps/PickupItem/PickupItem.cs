@@ -22,6 +22,7 @@ namespace PickUps.PickupItem
                         break;
                     case PickupType.Ammo:
                         player.totalAmmo += amount;
+                        player.NotifyAmmoChange();
                         Debug.Log($"🔫 Munición obtenida: +{amount} | Total: {player.totalAmmo}");
                         break;
                 }
