@@ -5,18 +5,19 @@ namespace UI
 {
     public class UIAmmoDisplay : MonoBehaviour
     {
-        [SerializeField] private TextMeshProUGUI ammoText;
-        private Player.Player player;
+        [Header("Referencia UI")]
+        [SerializeField] private TextMeshProUGUI _ammoText;
+
+        private Player.Player _player;
 
         private void Start()
         {
-            player = FindObjectOfType<Player.Player>();
+            _player = FindObjectOfType<Player.Player>();
 
-            if (player != null)
+            if (_player != null)
             {
-                player.OnAmmoChanged += UpdateAmmoUI;
-                
-                UpdateAmmoUI(player.currentAmmo, player.totalAmmo);
+                _player.OnAmmoChanged += UpdateAmmoUI;
+                UpdateAmmoUI(_player.currentAmmo, _player.totalAmmo);
             }
             else
             {
@@ -26,13 +27,16 @@ namespace UI
 
         private void OnDestroy()
         {
-            if (player != null)
-                player.OnAmmoChanged -= UpdateAmmoUI;
+            if (_player != null)
+                _player.OnAmmoChanged -= UpdateAmmoUI;
         }
 
+        /// <summary>
+        /// Actualiza el texto de la interfaz con la munición actual y total.
+        /// </summary>
         private void UpdateAmmoUI(int current, int max)
         {
-            ammoText.text = $"Ammo: {current} / {max}";
+            _ammoText.text = $"Ammo: {current} / {max}";
         }
     }
 }
