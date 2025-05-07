@@ -3,11 +3,11 @@ using Managers;
 
 namespace Enemy
 {
-    public class ChaseState : EnemyState
+    public class EnemyChaseState : EnemyState
     {
         private Enemy _enemy;
 
-        public ChaseState(Enemy enemy, EnemyStateMachine stateMachine, string animBoolName)
+        public EnemyChaseState(Enemy enemy, EnemyStateMachine stateMachine, string animBoolName)
             : base(enemy, stateMachine, animBoolName)
         {
             _enemy = enemy;

@@ -21,7 +21,7 @@
             base.Update();
 
             if (_enemy.IsPlayerDetected())
-                StateMachine.ChangeState(_enemy.ChaseState);
+                StateMachine.ChangeState(_enemy.EnemyChaseState);
         }
 
         public override void Exit()

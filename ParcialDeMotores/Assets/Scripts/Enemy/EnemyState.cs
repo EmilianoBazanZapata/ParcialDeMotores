@@ -2,6 +2,10 @@
 
 namespace Enemy
 {
+    /// <summary>
+    /// Clase base para todos los estados del enemigo.
+    /// Define el ciclo de vida del estado y su animación asociada.
+    /// </summary>
     public class EnemyState : IState
     {
         protected readonly EnemyStateMachine StateMachine;

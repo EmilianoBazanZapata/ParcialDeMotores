@@ -35,7 +35,7 @@ namespace Enemy
 
         public EnemyStateMachine StateMachine { get; private set; }
         public EnemyIdleState IdleState { get; private set; }
-        public ChaseState ChaseState { get; private set; }
+        public EnemyChaseState EnemyChaseState { get; private set; }
         public EnemyAttackState AttackState { get; private set; }
         public EnemyDeadState DeadState { get; private set; }
 
@@ -49,7 +49,7 @@ namespace Enemy
 
             StateMachine = new EnemyStateMachine();
             IdleState = new EnemyIdleState(this, StateMachine, "Idle");
-            ChaseState = new ChaseState(this, StateMachine, "Chase");
+            EnemyChaseState = new EnemyChaseState(this, StateMachine, "Chase");
             AttackState = new EnemyAttackState(this, StateMachine, "Attack");
             DeadState = new EnemyDeadState(this, StateMachine, "Die");
         }

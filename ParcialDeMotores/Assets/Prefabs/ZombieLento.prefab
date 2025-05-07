@@ -649,19 +649,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 692923c5c6b346109ed77bbadae4ba5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  damageInterval: 1
-  stunDuration: 0.6
-  attackRange: 0.4
-  detectionRadius: 10
-  damage: 25
-  Player: {fileID: 5487374864762279398, guid: e6dee0058ee530742bd2166c854ec3e3, type: 3}
-  Agent: {fileID: 3143341834699320857}
-  playerLayer:
+  _maxHealth: 50
+  _damageInterval: 2.5
+  _stunDuration: 0.3
+  _attackRange: 0.5
+  _detectionRadius: 10
+  _damage: 25
+  _playerLayer:
     serializedVersion: 2
     m_Bits: 64
-  IsStunned: 0
-  Pool: {fileID: 0}
 --- !u!54 &1738796848947571527
 Rigidbody:
   m_ObjectHideFlags: 0

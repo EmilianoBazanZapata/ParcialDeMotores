@@ -14,8 +14,10 @@ namespace Player
         {
         }
 
-        public override void Update()
+        public override void Enter()
         {
+            base.Enter();
+            
             GameManager.Instance.LoseGame();
         }
     }

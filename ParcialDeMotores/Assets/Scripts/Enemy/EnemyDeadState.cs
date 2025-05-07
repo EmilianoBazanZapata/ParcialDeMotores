@@ -4,6 +4,10 @@ using UnityEngine;
 
 namespace Enemy
 {
+    /// <summary>
+    /// Estado que se activa cuando el enemigo muere.
+    /// Reproduce animación y sonido, y luego devuelve el enemigo a la pool.
+    /// </summary>
     public class EnemyDeadState : EnemyState
     {
         private readonly Enemy _enemy;
@@ -17,17 +21,21 @@ namespace Enemy
         public override void Enter()
         {
             base.Enter();
-            
+
             SoundManager.Instance.PlaySound(SoundType.ZombieDeath);
 
             _enemy.Agent.isStopped = true;
             _enemy.Animator.SetTrigger("Die");
-            _enemy.StartCoroutine(WaitAndDestroy());
+
+            _enemy.StartCoroutine(WaitAndReturnToPool());
         }
 
-        private System.Collections.IEnumerator WaitAndDestroy()
+        /// <summary>
+        /// Espera a que finalice la animación y devuelve el enemigo al pool.
+        /// </summary>
+        private System.Collections.IEnumerator WaitAndReturnToPool()
         {
-            yield return new WaitForSeconds(1.3f); // Tiempo de animación
+            yield return new WaitForSeconds(1.3f); // Tiempo estimado de la animación
             _enemy.Pool.ReturnEnemy(_enemy);
         }
     }

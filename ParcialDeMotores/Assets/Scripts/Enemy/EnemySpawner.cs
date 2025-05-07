@@ -6,8 +6,13 @@ using UnityEngine;
 
 namespace Enemy
 {
+    /// <summary>
+    /// Se encarga de spawnear enemigos en puntos aleatorios a intervalos definidos.
+    /// Usa un sistema de probabilidad para seleccionar prefabs desde una pool.
+    /// </summary>
     public class EnemySpawner : MonoBehaviour
     {
+        [Header("Configuración de Spawneo")]
         [SerializeField] private Transform[] _spawnPoints;
         [SerializeField] private float _spawnInterval = 5f;
         [SerializeField] private EnemyPool _enemyPool;
@@ -18,26 +23,43 @@ namespace Enemy
             StartCoroutine(SpawnLoop());
         }
 
+        /// <summary>
+        /// Corrutina que genera enemigos continuamente según el intervalo.
+        /// </summary>
         private IEnumerator SpawnLoop()
         {
             while (true)
             {
                 yield return new WaitForSeconds(_spawnInterval);
-                
-                if (GameManager.Instance.CurrentState != GameState.InGame) continue;
 
-                var randomPoint = _spawnPoints[Random.Range(0, _spawnPoints.Length)];
+                if (GameManager.Instance.CurrentState != GameState.InGame)
+                    continue;
+
+                var spawnPoint = GetRandomSpawnPoint();
                 var selectedPrefab = GetRandomEnemyPrefab();
 
-                if (selectedPrefab == null) continue;
-                var enemy = _enemyPool.GetEnemy(selectedPrefab, randomPoint.position);
+                if (selectedPrefab == null || spawnPoint == null)
+                    continue;
+
+                var enemy = _enemyPool.GetEnemy(selectedPrefab, spawnPoint.position);
+
                 if (enemy == null)
-                {
-                    Debug.LogWarning("[Spawner] No se pudo spawnear enemigo.");
-                }
+                    Debug.LogWarning("[EnemySpawner] No se pudo spawnear enemigo desde la pool.");
             }
         }
 
+        /// <summary>
+        /// Devuelve un punto de spawn aleatorio.
+        /// </summary>
+        private Transform GetRandomSpawnPoint()
+        {
+            if (_spawnPoints.Length == 0) return null;
+            return _spawnPoints[Random.Range(0, _spawnPoints.Length)];
+        }
+
+        /// <summary>
+        /// Selecciona un prefab de enemigo según su probabilidad.
+        /// </summary>
         private GameObject GetRandomEnemyPrefab()
         {
             var totalWeight = 0f;

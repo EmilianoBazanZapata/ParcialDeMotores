@@ -982,19 +982,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 692923c5c6b346109ed77bbadae4ba5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 50
-  damageInterval: 1
-  stunDuration: 0.6
-  attackRange: 0.4
-  detectionRadius: 10
-  damage: 25
-  Player: {fileID: 2251285680229578346}
-  Agent: {fileID: 1782879174066581200}
-  playerLayer:
+  _maxHealth: 50
+  _damageInterval: 2.5
+  _stunDuration: 0.3
+  _attackRange: 0.5
+  _detectionRadius: 10
+  _damage: 25
+  _playerLayer:
     serializedVersion: 2
     m_Bits: 64
-  IsStunned: 0
-  Pool: {fileID: 0}
 --- !u!195 &1782879174066581200
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1065,8 +1061,3 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 2.1504176, z: 1}
   m_Center: {x: 0, y: 1.1131934, z: 0}
---- !u!4 &2251285680229578346 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5ae81c5ad30cd4b499b4ca4b45f2a5c4, type: 3}
-  m_PrefabInstance: {fileID: 1780211685256892801}
-  m_PrefabAsset: {fileID: 0}
