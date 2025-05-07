@@ -5,27 +5,41 @@ namespace CameraPlayer
     public class CameraFollow : MonoBehaviour
     {
         [Header("Objetivo a seguir")]
-        public Transform target;
+        [SerializeField] private Transform _target;
 
         [Header("Offset de la cámara")]
-        public Vector3 offset = new Vector3(0f, 5f, -6f);
+        [SerializeField] private Vector3 _offset = new(0f, 5f, -6f);
 
         [Header("Velocidad de seguimiento")]
-        public float smoothSpeed = 10f;
+        [SerializeField] private float _smoothSpeed = 10f;
 
         [Header("Altura fija al mirar al jugador")]
-        public float lookHeightOffset = 1.5f;
+        [SerializeField] private float _lookHeightOffset = 1.5f;
 
-        void LateUpdate()
+        private void LateUpdate()
         {
-            if (target == null) return;
+            if (_target == null) return;
 
-            Vector3 desiredPosition = target.position + offset;
-            Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed * Time.deltaTime);
+            FollowTarget();
+            LookAtTarget();
+        }
+
+        /// <summary>
+        /// Interpola suavemente la posición de la cámara hacia el objetivo.
+        /// </summary>
+        private void FollowTarget()
+        {
+            var desiredPosition = _target.position + _offset;
+            var smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, _smoothSpeed * Time.deltaTime);
             transform.position = smoothedPosition;
+        }
 
-            // Mirar hacia el jugador con un pequeño desplazamiento en altura
-            Vector3 lookPoint = target.position + Vector3.up * lookHeightOffset;
+        /// <summary>
+        /// Hace que la cámara mire hacia el jugador, ajustando ligeramente la altura.
+        /// </summary>
+        private void LookAtTarget()
+        {
+            var lookPoint = _target.position + Vector3.up * _lookHeightOffset;
             transform.LookAt(lookPoint);
         }
     }
