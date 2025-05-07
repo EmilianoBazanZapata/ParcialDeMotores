@@ -2,15 +2,18 @@
 
 namespace Player
 {
-    public class PlayerDeadState: PlayerState
+    /// <summary>
+    /// Estado que se activa cuando el jugador muere.
+    /// Cambia el estado global del juego a Game Over.
+    /// </summary>
+    public class PlayerDeadState : PlayerState
     {
-        private readonly Player _player;
-
-        public PlayerDeadState(Player player, PlayerStateMachine stateMachine, string animBoolName)
-            : base(player, stateMachine, animBoolName)
+        public PlayerDeadState(Player player, 
+                               PlayerStateMachine stateMachine, 
+                               string animBoolName) : base(player, stateMachine, animBoolName)
         {
-            _player = player;
         }
+
         public override void Update()
         {
             GameManager.Instance.LoseGame();

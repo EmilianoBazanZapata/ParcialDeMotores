@@ -1,9 +1,13 @@
 ﻿namespace Player
 {
+    /// <summary>
+    /// Máquina de estados del jugador.
+    /// Maneja las transiciones entre estados lógicos y de animación.
+    /// </summary>
     public class PlayerStateMachine : IStateMachine<PlayerState>
     {
         public PlayerState CurrentState { get; private set; }
-        
+
         public void Initialize(PlayerState startState)
         {
             CurrentState = startState;
@@ -12,6 +16,9 @@
 
         public void ChangeState(PlayerState newState)
         {
+            if (newState == CurrentState)
+                return;
+
             CurrentState.Exit();
             CurrentState = newState;
             CurrentState.Enter();
