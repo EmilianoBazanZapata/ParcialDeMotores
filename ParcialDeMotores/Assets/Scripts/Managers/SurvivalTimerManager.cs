@@ -19,15 +19,34 @@ namespace Managers
 
         private void Update()
         {
-            if (_gameEnded) return;
-            
-            if (GameManager.Instance.CurrentState != GameState.InGame) return;
+            if (ShouldSkipUpdate()) return;
 
-            _currentTime -= Time.deltaTime;
+            DecreaseTimer();
             UpdateTimerUI();
 
-            if (!(_currentTime <= 0f)) return;
-            
+            if (IsTimeOver())
+            {
+                HandleTimeOver();
+            }
+        }
+
+        private bool ShouldSkipUpdate()
+        {
+            return _gameEnded || GameManager.Instance.CurrentState != GameState.InGame;
+        }
+
+        private void DecreaseTimer()
+        {
+            _currentTime -= Time.deltaTime;
+        }
+
+        private bool IsTimeOver()
+        {
+            return _currentTime <= 0f;
+        }
+
+        private void HandleTimeOver()
+        {
             _currentTime = 0f;
             _gameEnded = true;
             GameManager.Instance.WinGame();

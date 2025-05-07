@@ -13,49 +13,54 @@ namespace Managers
 
         private void Start()
         {
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.OnGameStateChanged += HandleGameStateChanged;
-            }
-            
-            if (statusMessageText != null)
-            {
-                statusMessageText.gameObject.SetActive(false);
-            }
-
-            if (retryButton != null)
-            {
-                retryButton.gameObject.SetActive(true);
-            }
+            SubscribeToEvents();
+            HideEndMessage();
+            ShowRetryButton(true);
         }
 
-        private void OnDestroy()
+        private void OnDestroy() => UnsubscribeFromEvents();
+
+        private void SubscribeToEvents()
         {
             if (GameManager.Instance != null)
-            {
+                GameManager.Instance.OnGameStateChanged += HandleGameStateChanged;
+        }
+
+        private void UnsubscribeFromEvents()
+        {
+            if (GameManager.Instance != null)
                 GameManager.Instance.OnGameStateChanged -= HandleGameStateChanged;
-            }
         }
 
         private void HandleGameStateChanged(GameState newState)
         {
-            switch (newState)
-            {
-                case GameState.Victory:
-                    ShowEndGameMessage(true);
-                    break;
-                case GameState.GameOver:
-                    ShowEndGameMessage(false);
-                    break;
-            }
+            if (newState == GameState.Victory || newState == GameState.GameOver)
+                ShowEndGameMessage(newState == GameState.Victory);
         }
 
-        public void PlayGame()
+        public void PlayGame() =>SceneManager.LoadScene("Loading");
+        public void QuitGame()
         {
-            SceneManager.LoadScene("Loading");
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
         }
 
-        public void ShowEndGameMessage(bool hasWon)
+        private void HideEndMessage()
+        {
+            if (statusMessageText != null)
+                statusMessageText.gameObject.SetActive(false);
+        }
+
+        private void ShowRetryButton(bool show)
+        {
+            if (retryButton != null)
+                retryButton.gameObject.SetActive(show);
+        }
+
+        private void ShowEndGameMessage(bool hasWon)
         {
             if (statusMessageText != null)
             {
@@ -64,19 +69,7 @@ namespace Managers
                 statusMessageText.gameObject.SetActive(true);
             }
 
-            if (retryButton != null)
-            {
-                retryButton.gameObject.SetActive(false);
-            }
-        }
-
-        public void QuitGame()
-        {
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif
+            ShowRetryButton(false);
         }
     }
 }

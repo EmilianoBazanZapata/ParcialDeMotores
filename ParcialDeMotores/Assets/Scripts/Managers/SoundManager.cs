@@ -3,36 +3,23 @@ using UnityEngine;
 
 namespace Managers
 {
-public class SoundManager : MonoBehaviour
+    public class SoundManager : Singleton<SoundManager>
     {
-        public static SoundManager Instance { get; private set; }
-
-        [Header("Audio Sources")] [SerializeField]
-        private AudioSource musicSource;
-
+        [Header("Audio Sources")]
+        [SerializeField] private AudioSource musicSource;
         [SerializeField] private AudioSource sfxSource;
 
-        [Header("Audio Clips")] public AudioClip backgroundMusic;
+        [Header("Audio Clips")]
+        public AudioClip backgroundMusic;
         public AudioClip shotClip;
         public AudioClip reloadClip;
         public AudioClip zombieWalkClip;
-        public AudioClip zombiedeadClip;
+        public AudioClip zombieDeathClip;
         public AudioClip zombieAttackClip;
         public AudioClip playerWalkClip;
-        public AudioClip playerdeadClip;
+        public AudioClip playerDeathClip;
         public AudioClip victoryClip;
         public AudioClip defeatClip;
-
-        private void Awake()
-        {
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-            }
-            else
-                Destroy(gameObject);
-        }
         
         private void Start()
         {
@@ -40,83 +27,77 @@ public class SoundManager : MonoBehaviour
             HandleGameStateChanged(GameManager.Instance.CurrentState);
         }
 
+        /// <summary>
+        /// Reproduce un sonido de efectos (SFX).
+        /// </summary>
         private void PlaySFX(AudioClip clip)
         {
             if (clip != null)
                 sfxSource.PlayOneShot(clip);
         }
 
+        /// <summary>
+        /// Reproduce música de fondo.
+        /// </summary>
         private void PlayMusic(AudioClip clip)
         {
-            if (clip != null)
-            {
-                musicSource.clip = clip;
-                musicSource.loop = true;
-                musicSource.Play();
-            }
+            if (clip == null) return;
+            
+            musicSource.clip = clip;
+            musicSource.loop = true;
+            musicSource.Play();
         }
 
+        /// <summary>
+        /// Reproduce un sonido según el tipo especificado.
+        /// </summary>
         public void PlaySound(SoundType soundType)
         {
-            switch (soundType)
-            {
-                case SoundType.BackgroundMusic:
-                    PlayMusic(backgroundMusic);
-                    break;
-                case SoundType.Shot:
-                    PlaySFX(shotClip);
-                    break;
-                case SoundType.Reload:
-                    PlaySFX(reloadClip);
-                    break;
-                case SoundType.ZombieWalk:
-                    PlaySFX(zombieWalkClip);
-                    break;
-                case SoundType.ZombieDeath:
-                    PlaySFX(zombiedeadClip);
-                    break;
-                case SoundType.ZombieAttack:
-                    PlaySFX(zombieAttackClip);
-                    break;
-                case SoundType.PlayerWalk:
-                    PlaySFX(playerWalkClip);
-                    break;
-                case SoundType.PlayerDeath:
-                    PlaySFX(playerdeadClip);
-                    break;
-            }
+            AudioClip clip = GetClipBySoundType(soundType);
+            if (IsMusic(soundType))
+                PlayMusic(clip);
+            else
+                PlaySFX(clip);
         }
-        
+
+        /// <summary>
+        /// Devuelve el clip correspondiente al tipo de sonido.
+        /// </summary>
+        private AudioClip GetClipBySoundType(SoundType type) => type switch
+        {
+            SoundType.BackgroundMusic => backgroundMusic,
+            SoundType.Shot => shotClip,
+            SoundType.Reload => reloadClip,
+            SoundType.ZombieWalk => zombieWalkClip,
+            SoundType.ZombieDeath => zombieDeathClip,
+            SoundType.ZombieAttack => zombieAttackClip,
+            SoundType.PlayerWalk => playerWalkClip,
+            SoundType.PlayerDeath => playerDeathClip,
+            SoundType.Victory => victoryClip,
+            SoundType.Defeat => defeatClip,
+            _ => null
+        };
+
+        /// <summary>
+        /// Determina si el tipo de sonido corresponde a música.
+        /// </summary>
+        private bool IsMusic(SoundType type) =>
+            type == SoundType.BackgroundMusic || type == SoundType.Victory || type == SoundType.Defeat;
+
+        /// <summary>
+        /// Maneja la reproducción de música según el estado del juego.
+        /// </summary>
         private void HandleGameStateChanged(GameState state)
         {
-            switch (state)
+            var music = state switch
             {
-                case GameState.GameOver:
-                    PlayMusic(defeatClip);
-                    break;
-                case GameState.Victory:
-                    PlayMusic(victoryClip);
-                    break;
-                case GameState.InGame:
-                    PlayMusic(backgroundMusic);
-                    break;
-            }
-        }
+                GameState.InGame => backgroundMusic,
+                GameState.Victory => victoryClip,
+                GameState.GameOver => defeatClip,
+                _ => null
+            };
 
-        public void PauseMusic()
-        {
-            if (musicSource.isPlaying)
-                musicSource.Pause();
+            PlayMusic(music);
         }
-
-        public void ResumeMusic()
-        {
-            if (!musicSource.isPlaying)
-                musicSource.UnPause();
-        }
-
-        public void SetSFXVolume(float volume) => sfxSource.volume = volume;
-        public void SetMusicVolume(float volume) => musicSource.volume = volume;
-        public void StartBackgroundMusic() => PlayMusic(backgroundMusic);
     }
 }

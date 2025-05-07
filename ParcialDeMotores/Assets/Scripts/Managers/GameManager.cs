@@ -1,101 +1,66 @@
 ﻿using System;
 using Enums;
-using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 namespace Managers
 {
-    public class GameManager : MonoBehaviour
+    public class GameManager : Singleton<GameManager>
     {
-        [Header("Referencias")] [SerializeField]
-        private Camera gameCamera;
-
-        [SerializeField] private Camera menuCamera;
+        [Header("Referencias")]
+        [SerializeField] private Camera _gameCamera;
+        [SerializeField] private Camera _menuCamera;
 
         private bool isPaused;
 
-        public static GameManager Instance { get; private set; }
         public GameState CurrentState { get; private set; }
         public event Action<GameState> OnGameStateChanged;
 
-        private void Awake()
-        {
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
-        }
-
         private void Start()
         {
-            if (gameCamera == null)
-                gameCamera = Camera.main;
+            // Inicializa cámaras
+            if (_gameCamera == null)
+                _gameCamera = Camera.main;
 
-            if (menuCamera != null)
-                menuCamera.enabled = false;
+            if (_menuCamera != null)
+                _menuCamera.enabled = false;
 
             SetGameState(GameState.InGame);
         }
 
         private void Update()
         {
+            // Alterna pausa con la tecla P
             if (Input.GetKeyDown(KeyCode.P) && CurrentState == GameState.InGame)
-            {
                 TogglePause();
-            }
         }
 
-        public void ResumeFromMenu()
-        {
-            isPaused = false;
-            Time.timeScale = 1;
-
-            if (gameCamera != null)
-                gameCamera.enabled = true;
-
-            if (menuCamera != null)
-                menuCamera.enabled = false;
-
-            SetGameState(GameState.InGame);
-        }
-
-        public void ReturnToMenu()
-        {
-            if (CurrentState == GameState.InGame) return;
-
-            SceneManager.LoadScene("MainMenu");
-        }
-
-        public void ReloadScene()
-        {
-            if (CurrentState == GameState.InGame) return;
-
-            Time.timeScale = 1f; // Por si estaba en pausa
-            SceneManager.LoadScene("Loading");
-        }
-
+        /// <summary>
+        /// Cambia entre pausa y juego.
+        /// </summary>
         private void TogglePause()
         {
             isPaused = !isPaused;
             Time.timeScale = isPaused ? 0 : 1;
-
-            // Activar/Desactivar cámaras
-            if (gameCamera != null)
-                gameCamera.enabled = !isPaused;
-
-            if (menuCamera != null)
-                menuCamera.enabled = isPaused;
-
+            ToggleCameras(isPaused);
             SetGameState(isPaused ? GameState.Menu : GameState.InGame);
         }
 
+        /// <summary>
+        /// Activa o desactiva las cámaras del juego y del menú según el estado de pausa.
+        /// </summary>
+        private void ToggleCameras(bool pause)
+        {
+            if (_gameCamera != null)
+                _gameCamera.enabled = !pause;
+
+            if (_menuCamera != null)
+                _menuCamera.enabled = pause;
+        }
+
+        /// <summary>
+        /// Cambia el estado del juego y notifica a los suscriptores.
+        /// </summary>
         public void SetGameState(GameState newState)
         {
             if (newState == CurrentState) return;
@@ -103,6 +68,39 @@ namespace Managers
             OnGameStateChanged?.Invoke(CurrentState);
         }
 
+        /// <summary>
+        /// Reanuda el juego desde el menú de pausa.
+        /// </summary>
+        public void ResumeFromMenu()
+        {
+            isPaused = false;
+            Time.timeScale = 1;
+            ToggleCameras(false);
+            ResumeGame();
+        }
+
+        /// <summary>
+        /// Vuelve al menú principal si el juego no está en curso.
+        /// </summary>
+        public void ReturnToMenu()
+        {
+            if (CurrentState == GameState.InGame) return;
+            SceneManager.LoadScene("MainMenu");
+        }
+
+        /// <summary>
+        /// Recarga la escena actual (útil tras derrota o victoria).
+        /// </summary>
+        public void ReloadScene()
+        {
+            if (CurrentState == GameState.InGame) return;
+            Time.timeScale = 1f;
+            SceneManager.LoadScene("Loading");
+        }
+
+        /// <summary>
+        /// Cierra el juego (o detiene el editor si está en desarrollo).
+        /// </summary>
         public void QuitGame()
         {
             if (CurrentState == GameState.InGame) return;
@@ -114,7 +112,7 @@ namespace Managers
 #endif
         }
 
-        #region Estados Públicos
+        #region Métodos Públicos de Estados
 
         public void StartGame() => SetGameState(GameState.StartGame);
         public void GoToMenu() => SetGameState(GameState.MainMenu);
@@ -131,7 +129,6 @@ namespace Managers
             SetGameState(GameState.Victory);
             TogglePause();
         }
-
 
         public void LoseGame()
         {
