@@ -6,56 +6,64 @@ namespace Spawner
 {
     public class SpawnerZone : MonoBehaviour
     {
-        [SerializeField] private Transform[] spawnPoints;
-        [SerializeField] private GameObject pickupPrefab;
-        [SerializeField] private float spawnInterval = 10f;
-        [SerializeField] private float playerCheckRadius = 10f;
-        [SerializeField] private PickupPool pickupPool;
+        [Header("Configuración del Spawner")]
+        [SerializeField] private Transform[] _spawnPoints;
+        [SerializeField] private GameObject _pickupPrefab;
+        [SerializeField] private float _spawnInterval = 10f;
+        [SerializeField] private float _playerCheckRadius = 10f;
+        [SerializeField] private PickupPool _pickupPool;
 
-        private GameObject currentPickup;
-        private Transform player;
+        private GameObject _currentPickup;
+        private Transform _player;
 
         private void Start()
         {
-            player = GameObject.FindGameObjectWithTag("Player")?.transform;
-            
+            _player = GameObject.FindGameObjectWithTag("Player")?.transform;
             StartCoroutine(SpawnRoutine());
         }
 
+        /// <summary>
+        /// Corrutina que intenta spawnear pickups a intervalos regulares.
+        /// </summary>
         private IEnumerator SpawnRoutine()
         {
             while (true)
             {
-                yield return new WaitForSeconds(spawnInterval);
+                yield return new WaitForSeconds(_spawnInterval);
 
-                if (currentPickup != null && currentPickup.activeInHierarchy) continue;
+                if (_currentPickup != null && _currentPickup.activeInHierarchy)
+                    continue;
+
                 var spawnPoint = GetRandomAvailableSpawnPoint();
 
-                if (spawnPoint == null) continue;
-                
-                currentPickup = pickupPool.GetPickup();
-                currentPickup.transform.position = spawnPoint.position;
-                currentPickup.transform.rotation = Quaternion.identity;
+                if (spawnPoint == null)
+                    continue;
 
-                // Solo si el pool no activa el objeto
-                if (!currentPickup.activeInHierarchy)
-                    currentPickup.SetActive(true);
+                _currentPickup = _pickupPool.GetPickup();
+                if (_currentPickup == null)
+                    continue;
+
+                _currentPickup.transform.SetPositionAndRotation(spawnPoint.position, Quaternion.identity);
+
+                // Activamos el pickup si el pool no lo hace por defecto
+                if (!_currentPickup.activeInHierarchy)
+                    _currentPickup.SetActive(true);
             }
         }
 
-
+        /// <summary>
+        /// Obtiene un punto aleatorio que esté suficientemente alejado del jugador.
+        /// </summary>
         private Transform GetRandomAvailableSpawnPoint()
         {
-            // Intentamos varias veces buscar un punto alejado del jugador
             for (int i = 0; i < 10; i++)
             {
-                var randomPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-                
-                if (Vector3.Distance(player.position, randomPoint.position) > playerCheckRadius)
+                var randomPoint = _spawnPoints[Random.Range(0, _spawnPoints.Length)];
+
+                if (Vector3.Distance(_player.position, randomPoint.position) > _playerCheckRadius)
                     return randomPoint;
             }
 
-            // No se encontró un punto suficientemente alejado
             return null;
         }
     }
