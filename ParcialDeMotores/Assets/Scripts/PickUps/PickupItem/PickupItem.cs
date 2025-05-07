@@ -14,7 +14,7 @@ namespace PickUps.PickupItem
             if (!other.TryGetComponent(out Player.Player player))
                 return;
 
-            if (type == PickupType.Health && player.currentHealth == player.maxHealth)
+            if (type == PickupType.Health && player.CurrentHealth == player.MaxHealth)
                 return;
 
             ApplyPickupTo(player);
@@ -33,7 +33,7 @@ namespace PickUps.PickupItem
                     break;
 
                 case PickupType.Ammo:
-                    player.totalAmmo += amount;
+                    player.TotalAmmo += amount;
                     player.NotifyAmmoChange();
                     Debug.Log($"🔫 Munición obtenida: +{amount} | Total: player.totalAmmo");
                     break;

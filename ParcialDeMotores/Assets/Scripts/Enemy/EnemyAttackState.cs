@@ -37,12 +37,12 @@ namespace Enemy
                 return;
             }
 
-            if (!(Time.time - _lastAttackTime > _enemy.damageInterval)) return;
+            if (!(Time.time - _lastAttackTime > _enemy.DamageInterval)) return;
             _lastAttackTime = Time.time;
             _enemy.Animator.SetTrigger("Attack");
             
             if (!_enemy.Player.TryGetComponent<Player.Player>(out var player)) return;
-            player.TakeDamage(_enemy.damage);
+            player.TakeDamage(_enemy.Damage);
             SoundManager.Instance.PlaySound(SoundType.ZombieAttack);
         }
     }

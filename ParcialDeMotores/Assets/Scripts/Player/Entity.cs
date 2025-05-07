@@ -4,25 +4,21 @@ namespace Player
 {
     public class Entity : MonoBehaviour
     {
-        public float moveSpeed = 5f;
-        public float rotationSpeed = 10f;
+        [Header("Movimiento")]
+        [SerializeField] protected float _moveSpeed = 5f;
+        [SerializeField] protected float _rotationSpeed = 10f;
+
         public Animator Animator { get; private set; }
         public Rigidbody Rb { get; private set; }
-        
-        protected virtual void Awake()
-        {
-            // Se puede sobrescribir en clases hijas
-        }
 
-        protected virtual void Start()
+        protected virtual void Awake()
         {
             Animator = GetComponent<Animator>();
             Rb = GetComponent<Rigidbody>();
         }
 
-        protected virtual void Update()
-        {
-            // Se puede sobrescribir en clases hijas
-        }
+        protected virtual void Start() { }
+
+        protected virtual void Update() { }
     }
 }

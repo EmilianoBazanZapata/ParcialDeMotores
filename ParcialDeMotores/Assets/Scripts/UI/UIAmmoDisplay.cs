@@ -17,7 +17,7 @@ namespace UI
             if (_player != null)
             {
                 _player.OnAmmoChanged += UpdateAmmoUI;
-                UpdateAmmoUI(_player.currentAmmo, _player.totalAmmo);
+                UpdateAmmoUI(_player.CurrentAmmo, _player.TotalAmmo);
             }
             else
             {

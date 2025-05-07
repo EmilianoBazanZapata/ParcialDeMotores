@@ -12,7 +12,7 @@
 
         public override void Enter()
         {
-            if (_player.totalAmmo == 0)
+            if (_player.TotalAmmo == 0)
                 return;
             
             base.Enter();
