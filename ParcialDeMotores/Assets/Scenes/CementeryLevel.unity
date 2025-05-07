@@ -2233,7 +2233,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba1fd7c6665a4509a688b98dd50c2188, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ammoText: {fileID: 214859605}
+  _ammoText: {fileID: 214859605}
 --- !u!114 &214859605
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4951,20 +4951,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6cfc04f1ca34e59ad192b063af3744c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 4
-  rotationSpeed: 10
-  forwardMaxAngle: 45
-  playerCamera: {fileID: 534669904}
-  maxAmmo: 30
-  reloadTime: 2
-  currentAmmo: 30
-  totalAmmo: 250
-  shootCooldown: 0.3
-  shootPoint: {fileID: 585970398}
-  bulletPool: {fileID: 716339449}
-  maxHealth: 75
-  currentHealth: 0
-  healthBarUI: {fileID: 982100461}
+  _moveSpeed: 5
+  _rotationSpeed: 10
+  _forwardMaxAngle: 60
+  _playerCamera: {fileID: 534669904}
+  _maxAmmo: 10
+  _reloadTime: 2
+  _shootPoint: {fileID: 585970398}
+  _bulletPool: {fileID: 716339449}
+  _shootCooldown: 0.5
+  _maxHealth: 75
+  _healthBarUI: {fileID: 982100461}
 --- !u!1 &427153024
 GameObject:
   m_ObjectHideFlags: 0
@@ -6411,6 +6408,7 @@ GameObject:
   - component: {fileID: 534669904}
   - component: {fileID: 534669903}
   - component: {fileID: 534669906}
+  - component: {fileID: 534669907}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: Untagged
@@ -6504,10 +6502,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd85cc4b55f247158c4169baf5d9ed9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 422015631}
-  offset: {x: 0, y: 5, z: -6}
-  smoothSpeed: 10
-  lookHeightOffset: 1.5
+--- !u!114 &534669907
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 534669902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 885d2fd913e54d5a9dc545533a66f2c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _target: {fileID: 422015631}
+  _offset: {x: 0, y: 5, z: -6}
+  _smoothSpeed: 10
+  _lookHeightOffset: 1.5
 --- !u!1001 &536711561
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8246,7 +8256,7 @@ GameObject:
   - component: {fileID: 716339450}
   - component: {fileID: 716339449}
   m_Layer: 0
-  m_Name: PoolObject
+  m_Name: BulletPool
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10877,9 +10887,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f00be03e4f8746e39e85e44fcba4c0b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthSlider: {fileID: 982100460}
-  fillImage: {fileID: 1005717661}
-  colorGradient:
+  _healthSlider: {fileID: 982100460}
+  _fillImage: {fileID: 1005717661}
+  _colorGradient:
     serializedVersion: 2
     key0: {r: 1, g: 0, b: 0, a: 1}
     key1: {r: 0, g: 1, b: 0, a: 1}
@@ -10905,7 +10915,7 @@ MonoBehaviour:
     atime5: 0
     atime6: 0
     atime7: 0
-    m_Mode: 2
+    m_Mode: 0
     m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
@@ -11169,12 +11179,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f00be03e4f8746e39e85e44fcba4c0b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthSlider: {fileID: 982100460}
-  fillImage: {fileID: 1005717661}
-  colorGradient:
+  _healthSlider: {fileID: 0}
+  _fillImage: {fileID: 0}
+  _colorGradient:
     serializedVersion: 2
-    key0: {r: 1, g: 0, b: 0, a: 1}
-    key1: {r: 0, g: 1, b: 0, a: 1}
+    key0: {r: 1, g: 1, b: 1, a: 1}
+    key1: {r: 1, g: 1, b: 1, a: 1}
     key2: {r: 0, g: 0, b: 0, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
@@ -11197,7 +11207,7 @@ MonoBehaviour:
     atime5: 0
     atime6: 0
     atime7: 0
-    m_Mode: 2
+    m_Mode: 0
     m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
@@ -12396,17 +12406,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3635a7e392ef434f9b050e383e3a985e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnPoints:
+  _spawnPoints:
   - {fileID: 998928503}
   - {fileID: 1280057380}
   - {fileID: 411580668}
   - {fileID: 1894379345}
   - {fileID: 1569292795}
   - {fileID: 1589073915}
-  pickupPrefab: {fileID: 611976547244656544, guid: 3b147571bdc29cf4ca0b41d4781c66e1, type: 3}
-  spawnInterval: 30
-  playerCheckRadius: 10
-  pickupPool: {fileID: 2138701818}
+  _pickupPrefab: {fileID: 3258640840268697292, guid: 7e4ecb25403b708419aaefa975f3f198, type: 3}
+  _spawnInterval: 10
+  _playerCheckRadius: 10
+  _pickupPool: {fileID: 2138701818}
 --- !u!4 &1161351352
 Transform:
   m_ObjectHideFlags: 0
@@ -15309,8 +15319,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3469ee35e7e4de28b25fdcf0eb24adf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameCamera: {fileID: 534669904}
-  menuCamera: {fileID: 338414610}
+  _gameCamera: {fileID: 534669904}
+  _menuCamera: {fileID: 338414610}
 --- !u!4 &1435450259 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7273926157692253545, guid: 4563cd8ca3d35de49ab2f8b59f8f2f0e, type: 3}
@@ -17684,10 +17694,10 @@ MonoBehaviour:
   shotClip: {fileID: 8300000, guid: ef3c66a26a1220d4cb1b8fb4cc0b0ed4, type: 3}
   reloadClip: {fileID: 8300000, guid: d6caee31b28b3454bb5c8a85bdec63fd, type: 3}
   zombieWalkClip: {fileID: 8300000, guid: 705db65e0321e464a82f327adde6d076, type: 3}
-  zombiedeadClip: {fileID: 8300000, guid: b6dc40af90ecd6a43838197d60341861, type: 3}
+  zombieDeathClip: {fileID: 0}
   zombieAttackClip: {fileID: 8300000, guid: 33d8a3ee550d46541b466b38d90be923, type: 3}
   playerWalkClip: {fileID: 8300000, guid: 3fa895dbd33c6834db6f802f6c8ecfdb, type: 3}
-  playerdeadClip: {fileID: 8300000, guid: d62850de8604a1d44a95e6a88814151f, type: 3}
+  playerDeathClip: {fileID: 0}
   victoryClip: {fileID: 8300000, guid: b6f0863219be47a429514f9556c6453e, type: 3}
   defeatClip: {fileID: 8300000, guid: 3d258d304a593d248aa274eae968159c, type: 3}
 --- !u!1 &1612724107
@@ -17904,17 +17914,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3635a7e392ef434f9b050e383e3a985e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnPoints:
+  _spawnPoints:
   - {fileID: 621958510}
   - {fileID: 995402076}
   - {fileID: 1068169273}
   - {fileID: 1381997858}
   - {fileID: 1836285105}
   - {fileID: 2086970520}
-  pickupPrefab: {fileID: 611976547244656544, guid: 3b147571bdc29cf4ca0b41d4781c66e1, type: 3}
-  spawnInterval: 1
-  playerCheckRadius: 10
-  pickupPool: {fileID: 1553043193}
+  _pickupPrefab: {fileID: 611976547244656544, guid: 3b147571bdc29cf4ca0b41d4781c66e1, type: 3}
+  _spawnInterval: 10
+  _playerCheckRadius: 10
+  _pickupPool: {fileID: 1553043193}
 --- !u!4 &1628751669
 Transform:
   m_ObjectHideFlags: 0
